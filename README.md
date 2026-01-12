@@ -10,6 +10,7 @@
 - 平台鉴权与身份映射提案：`openspec/proposals/0003-platform-auth-and-identity-mapping.md`
 - 前端管理台提案：`openspec/proposals/0004-frontend-admin-console.md`
 - 模块与目录结构提案：`openspec/proposals/0005-repo-structure-and-modules.md`
+- 后端包结构提案：`openspec/proposals/0006-server-module-and-package-structure.md`
 - MVP 规格：`openspec/specs/0001-mvp-rag-knowledge-nexus-spec.md`
 - 前端管理台规格：`openspec/specs/0002-frontend-admin-console-spec.md`
 - 标准登录规格：`openspec/specs/0003-auth-login-spec.md`
@@ -32,6 +33,7 @@
   - `openspec/decisions/0016-storage-object-key-and-presign-security.md`
   - `openspec/decisions/0017-primary-key-strategy.md`
   - `openspec/decisions/0018-user-roles-join-table.md`
+  - `openspec/decisions/0019-architecture-enforcement-archunit.md`
 
 ## 项目结构
 
