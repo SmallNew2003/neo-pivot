@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: neo-pivot-server
+  datasource:
+    url: jdbc:postgresql://localhost:5432/neo_pivot
+    username: neo
+    password: neo
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.sql
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+neopivot:
+  auth:
+    issuer: "neo-pivot"
+    audience: "neo-pivot-api"
+    token-ttl: "PT1H"
+    users:
+      - username: "demo"
+        # bcrypt("demo") - 仅用于本地演示；请在实际环境中替换为自定义用户与密码策略。
+        password-bcrypt: "$2y$10$DDxIaejxNt3b0D1Bd7Nv2.P9vn2IfQ9Bk7xRlc6rybN/X8uFaDjKa"
+        roles:
+          - "USER"
