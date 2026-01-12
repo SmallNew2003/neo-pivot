@@ -1,5 +1,6 @@
-package com.jelvin.neopivot.auth;
+package com.jelvin.neopivot.auth.api;
 
+import com.jelvin.neopivot.auth.application.JwtKeyService;
 import com.nimbusds.jose.jwk.JWKSet;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,4 +39,3 @@ public class JwksController {
         return jwkSet.toJSONObject();
     }
 }
-

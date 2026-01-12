@@ -1,6 +1,6 @@
-package com.jelvin.neopivot.auth;
+package com.jelvin.neopivot.auth.config;
 
-import com.nimbusds.jose.jwk.JWKSet;
+import com.jelvin.neopivot.auth.application.JwtKeyService;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

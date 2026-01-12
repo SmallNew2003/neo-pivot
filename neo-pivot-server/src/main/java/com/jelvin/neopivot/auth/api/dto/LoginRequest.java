@@ -1,4 +1,4 @@
-package com.jelvin.neopivot.auth;
+package com.jelvin.neopivot.auth.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -33,4 +33,3 @@ public class LoginRequest {
         this.password = password;
     }
 }
-

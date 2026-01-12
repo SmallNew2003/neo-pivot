@@ -1,4 +1,4 @@
-package com.jelvin.neopivot.auth;
+package com.jelvin.neopivot.auth.api.dto;
 
 import java.util.List;
 
@@ -87,4 +87,3 @@ public class LoginResponse {
         }
     }
 }
-

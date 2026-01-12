@@ -1,4 +1,7 @@
-package com.jelvin.neopivot.auth;
+package com.jelvin.neopivot.auth.application;
+
+import com.jelvin.neopivot.auth.config.AuthProperties;
+import com.jelvin.neopivot.auth.domain.UserRecord;
 
 import java.time.Instant;
 import java.util.List;
@@ -54,7 +57,7 @@ public class JwtTokenService {
                         .audience(List.of(authProperties.getAudience()))
                         .issuedAt(now)
                         .expiresAt(expiresAt)
-                        .subject(user.id())
+                        .subject(String.valueOf(user.id()))
                         .id(UUID.randomUUID().toString())
                         .claim("roles", user.roles())
                         .build();
@@ -65,4 +68,3 @@ public class JwtTokenService {
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
     }
 }
-

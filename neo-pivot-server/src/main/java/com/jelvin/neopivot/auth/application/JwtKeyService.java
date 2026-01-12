@@ -1,4 +1,4 @@
-package com.jelvin.neopivot.auth;
+package com.jelvin.neopivot.auth.application;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWKSet;

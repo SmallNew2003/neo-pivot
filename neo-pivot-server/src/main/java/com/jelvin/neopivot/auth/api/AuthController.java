@@ -1,5 +1,11 @@
-package com.jelvin.neopivot.auth;
+package com.jelvin.neopivot.auth.api;
 
+import com.jelvin.neopivot.auth.application.JwtTokenService;
+import com.jelvin.neopivot.auth.application.UserAuthenticationService;
+import com.jelvin.neopivot.auth.config.AuthProperties;
+import com.jelvin.neopivot.auth.domain.UserRecord;
+import com.jelvin.neopivot.auth.api.dto.LoginRequest;
+import com.jelvin.neopivot.auth.api.dto.LoginResponse;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -65,7 +71,7 @@ public class AuthController {
         response.setExpiresInSeconds(authProperties.getTokenTtl().toSeconds());
 
         LoginResponse.UserView userView = new LoginResponse.UserView();
-        userView.setId(user.get().id());
+        userView.setId(String.valueOf(user.get().id()));
         userView.setUsername(user.get().username());
         userView.setRoles(user.get().roles());
         response.setUser(userView);
@@ -81,4 +87,3 @@ public class AuthController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     private static class InvalidCredentialsException extends RuntimeException {}
 }
-
