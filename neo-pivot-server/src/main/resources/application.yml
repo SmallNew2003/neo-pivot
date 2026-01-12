@@ -10,7 +10,8 @@ spring:
     password: neo
   liquibase:
     enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.sql
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    contexts: local
 
 management:
   endpoints:
@@ -23,9 +24,3 @@ neopivot:
     issuer: "neo-pivot"
     audience: "neo-pivot-api"
     token-ttl: "PT1H"
-    users:
-      - username: "demo"
-        # bcrypt("demo") - 仅用于本地演示；请在实际环境中替换为自定义用户与密码策略。
-        password-bcrypt: "$2y$10$DDxIaejxNt3b0D1Bd7Nv2.P9vn2IfQ9Bk7xRlc6rybN/X8uFaDjKa"
-        roles:
-          - "USER"
