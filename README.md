@@ -29,6 +29,9 @@
   - `openspec/decisions/0013-database-migrations-flyway.md`
   - `openspec/decisions/0014-database-migrations-liquibase.md`
   - `openspec/decisions/0015-persistence-mybatisflex.md`
+  - `openspec/decisions/0016-storage-object-key-and-presign-security.md`
+  - `openspec/decisions/0017-primary-key-strategy.md`
+  - `openspec/decisions/0018-user-roles-join-table.md`
 
 ## 项目结构
 
@@ -52,7 +55,9 @@
 
 默认配置（仅用于本地演示）：
 
-- 登录：`demo / demo`
+- 登录：
+  - 普通用户：`demo / demo`
+  - 超管（ADMIN）：`admin / admin`
 - API：`http://localhost:8080`
 - 前端：`http://localhost:5173`
 - PostgreSQL：`localhost:5432`（db=`neo_pivot` user=`neo` password=`neo`）
