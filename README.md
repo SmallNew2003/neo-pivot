@@ -26,11 +26,14 @@
   - `openspec/decisions/0010-frontend-login-and-s3-presign-put.md`
   - `openspec/decisions/0011-architecture-modular-monolith-not-microservices.md`
   - `openspec/decisions/0012-middleware-baseline.md`
+  - `openspec/decisions/0013-database-migrations-flyway.md`
+  - `openspec/decisions/0014-database-migrations-liquibase.md`
+  - `openspec/decisions/0015-persistence-mybatisflex.md`
 
 ## 项目结构
 
-- 后端（Spring Boot / Maven）：`server/`
-- 前端管理台（Vue / Vite）：`console/`
+- 后端（Spring Boot / Maven）：`neo-pivot-server/`
+- 前端管理台（Vue / Vite）：`neo-pivot-console/`
 - 本地依赖（PostgreSQL+PGVector / MinIO）：`docker-compose.yml`
 
 ## 本地启动（骨架阶段）
@@ -41,11 +44,11 @@
 
 2) 启动后端
 
-- `mvn -f server/pom.xml spring-boot:run`
+- `mvn -f neo-pivot-server/pom.xml spring-boot:run`
 
 3) 启动前端
 
-- `cd console && npm i && npm run dev`
+- `cd neo-pivot-console && npm i && npm run dev`
 
 默认配置（仅用于本地演示）：
 
