@@ -24,6 +24,18 @@ neopivot:
     issuer: "neo-pivot"
     audience: "neo-pivot-api"
     token-ttl: "PT1H"
+  security:
+    permit-all:
+      - "/api/auth/login"
+      - "/.well-known/jwks.json"
+      - "/actuator/health"
+      - "/actuator/info"
+      - "/v3/api-docs/**"
+      - "/swagger-ui/**"
+      - "/swagger-ui.html"
+      - "/doc.html"
+      - "/webjars/**"
+      - "/swagger-resources/**"
   storage:
     s3:
       bucket: "neo-pivot"
