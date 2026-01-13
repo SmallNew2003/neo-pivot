@@ -24,3 +24,12 @@ neopivot:
     issuer: "neo-pivot"
     audience: "neo-pivot-api"
     token-ttl: "PT1H"
+  storage:
+    s3:
+      bucket: "neo-pivot"
+      endpoint: "${NEOPIVOT_S3_ENDPOINT:}"
+      region: "${NEOPIVOT_S3_REGION:us-east-1}"
+      access-key: "${NEOPIVOT_S3_ACCESS_KEY:}"
+      secret-key: "${NEOPIVOT_S3_SECRET_KEY:}"
+      path-style-access: "${NEOPIVOT_S3_PATH_STYLE_ACCESS:false}"
+      upload-presign-ttl: "PT10M"
