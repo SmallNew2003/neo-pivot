@@ -1,6 +1,6 @@
 # 0001：企业级 RAG 知识库系统 MVP 规格（Spec）
 
-> 对应提案：`openspec/proposals/0001-mvp-rag-knowledge-nexus.md`
+> 对应提案：`openspec/changes/archive/2026-01-12-v0.1.0-add-mvp-rag-knowledge-nexus/proposal.md`
 
 ## 1. 目标与范围
 
@@ -74,7 +74,7 @@
 
 ### 3.4 平台接入鉴权与身份映射（主路径）
 
-- 平台接入主路径采用“方案 A：透传终端用户 JWT”，见 `openspec/proposals/0003-platform-auth-and-identity-mapping.md`。
+- 平台接入主路径采用“方案 A：透传终端用户 JWT”，见 `openspec/changes/archive/2026-01-12-v0.1.0-add-platform-auth-and-identity-mapping/proposal.md`。
 - 平台调用底座 API 时必须携带用户级 `Authorization: Bearer <user_jwt>`，底座以 JWT `sub` 解析出内部 `userId` 并映射到 `owner_id` 执行权限过滤与审计（见 `openspec/decisions/0017-primary-key-strategy.md`）。
 
 ## 4. 数据模型（PostgreSQL + PGVector）
@@ -289,7 +289,7 @@
 
 ## 12. 多平台适配（Coze / Dify / n8n）
 
-> 总体策略见：`openspec/proposals/0002-platform-integration-strategy.md` 与 `openspec/decisions/0006-platform-strategy-core-adapters.md`
+> 总体策略见：`openspec/changes/archive/2026-01-12-v0.1.0-add-platform-integration-strategy/proposal.md` 与 `openspec/decisions/0006-platform-strategy-core-adapters.md`
 
 ### 12.0 范围说明（避免误解）
 

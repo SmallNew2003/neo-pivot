@@ -1,6 +1,6 @@
 # 0002：前端管理台（Admin Console）规格（Spec）
 
-> 对应提案：`openspec/proposals/0004-frontend-admin-console.md`
+> 对应提案：`openspec/changes/archive/2026-01-12-v0.1.0-add-frontend-admin-console/proposal.md`
 
 ## 1. 范围与原则
 
@@ -8,7 +8,7 @@
 
 本规格定义“管理台 Web”的信息架构、关键页面、与底座 API 的契约要求，用于支撑：
 
-- 方案A：终端用户 JWT 透传（`openspec/proposals/0003-platform-auth-and-identity-mapping.md`）
+- 方案A：终端用户 JWT 透传（`openspec/changes/archive/2026-01-12-v0.1.0-add-platform-auth-and-identity-mapping/proposal.md`）
 - 模式A：最终答案生成由底座负责（`openspec/decisions/0008-generation-owned-by-core.md`）
 - S3 直传：前端通过 presigned URL 直传对象存储
 
