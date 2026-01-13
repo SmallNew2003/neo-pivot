@@ -56,7 +56,7 @@
 
 至少需要以下字段：
 
-- `sub`：用户唯一标识（建议使用字符串 userId）。
+- `sub`：内部用户 ID（数值型，以字符串形式承载，等同于 `users.id`，见 `openspec/decisions/0017-primary-key-strategy.md`）。
 - `roles`：角色数组（可选；MVP 用于 admin 放行）。
 - `iss`：签发者（建议必填，用于校验）。
 - `aud`：受众（建议必填，用于校验）。
@@ -69,27 +69,37 @@
 
 ### 3.3 授权规则（MVP）
 
-- 默认规则：用户只能访问/检索 `owner_id == sub` 的数据。
+- 默认规则：用户只能访问/检索 `owner_id == userId(sub)` 的数据（`sub` 为内部用户 ID）。
 - 可选增强：当 `roles` 包含 `ADMIN` 时允许访问全部文档（便于演示与运维）。
 
 ### 3.4 平台接入鉴权与身份映射（主路径）
 
 - 平台接入主路径采用“方案 A：透传终端用户 JWT”，见 `openspec/proposals/0003-platform-auth-and-identity-mapping.md`。
-- 平台调用底座 API 时必须携带用户级 `Authorization: Bearer <user_jwt>`，底座以 JWT `sub` 作为 `owner_id` 执行权限过滤与审计。
+- 平台调用底座 API 时必须携带用户级 `Authorization: Bearer <user_jwt>`，底座以 JWT `sub` 解析出内部 `userId` 并映射到 `owner_id` 执行权限过滤与审计（见 `openspec/decisions/0017-primary-key-strategy.md`）。
 
 ## 4. 数据模型（PostgreSQL + PGVector）
 
 > 表结构字段名为建议值，最终以实现为准；但必须满足本规格的语义与约束。
 
+### 4.0 users（用户）
+
+用于登录签发 JWT、权限隔离与审计：
+
+- `id`：主键（MVP 采用 `BIGSERIAL`，见 `openspec/decisions/0017-primary-key-strategy.md`）。
+- `username`：唯一用户名。
+- `password_hash`：密码哈希（bcrypt/argon2）。
+- `user_roles`：用户角色（关联表，见 `openspec/decisions/0018-user-roles-join-table.md`）。
+- `created_at` / `updated_at`：时间戳。
+
 ### 4.1 documents（文档元数据）
 
-- `id`：主键（UUID 或 BIGSERIAL，二选一）。
-- `owner_id`：文档所属用户（来自 JWT `sub`）。
+- `id`：主键（MVP 采用 `BIGSERIAL`，见 `openspec/decisions/0017-primary-key-strategy.md`）。
+- `owner_id`：文档所属用户（`BIGINT` 外键关联 `users.id`，来自 JWT `sub` 映射）。
 - `filename`：原始文件名。
 - `content_type`：MIME 类型（可选）。
 - `size_bytes`：文件大小（可选）。
 - `sha256`：文件哈希（可选，便于去重/幂等）。
-- `storage_uri`：存储定位（例如本地路径或 `s3://...`，MVP 可先用本地）。
+- `storage_uri`：存储定位（例如 `s3://...`）；S3 key 组织规则见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`。
 - `status`：`UPLOADED` / `INDEXING` / `INDEXED` / `FAILED`。
 - `error_message`：失败原因（仅当 `FAILED`）。
 - `created_at` / `updated_at`：时间戳。
@@ -127,6 +137,31 @@
 
 - 对 `embedding` 建立向量索引（ivfflat 或 hnsw，结合 PGVector 版本与性能权衡）。
 - 对 `owner_id` 建立 btree 索引（配合过滤）。
+
+### 4.4 storage_presigns（对象存储 presign 凭证记录）
+
+用于实现“禁止复用（消费一次）”的语义约束与审计追踪（见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`）。
+
+- `id`：主键（可用 `BIGSERIAL`，对外作为 `presignId`）。
+- `owner_id`：`BIGINT` 外键关联 `users.id`。
+- `document_id`：
+  - 上传场景必填：为底座预分配的 `documents.id`（签发 presign 时生成；此时 `documents` 记录可能尚未创建，因此不强制外键约束）
+  - 下载场景必填：为已存在的 `documents.id`（可选是否加外键约束，按实现阶段确定）
+- `purpose`：`UPLOAD` / `DOWNLOAD`
+- `method`：`PUT` / `GET`
+- `storage_uri`：`s3://...`（用于审计；不得记录完整 presigned URL）
+- `status`：`ISSUED` / `CONSUMED` / `EXPIRED`
+- `expires_at`：过期时间戳
+- `issued_ip`：签发 IP（可选）
+- `issued_user_agent`：签发 UA（可选）
+- `consumed_at`：消费时间（仅上传确认时）
+- `consumed_ip`：消费 IP（可选）
+- `created_at`：时间戳
+
+约束建议：
+
+- `(owner_id, id)` 组合可用于快速按用户检索审计
+- 上传消费必须“只允许一次”：实现时通过“条件更新 status=ISSUED → CONSUMED”保证；也可通过把 `documents.upload_presign_id` 设为 `UNIQUE`（实现阶段确定）
 
 ## 5. 事件与一致性
 
@@ -168,6 +203,11 @@
 
 - `POST /api/storage/presign`
   - 权限：需要 JWT
+
+为满足下载场景（短期可控链接），建议提供下载 presign 签发能力（见 `openspec/specs/0002-frontend-admin-console-spec.md` 与 `openspec/decisions/0016-storage-object-key-and-presign-security.md`）：
+
+- `POST /api/storage/presign-download`
+  - 权限：owner 或 admin
 
 ### 6.2 查询文档状态
 
@@ -228,12 +268,12 @@
 - 目标：文档存储可在“本地文件系统”与 “S3/MinIO（S3 兼容）”之间切换，不影响上层索引与检索流程。
 - 约定：`documents.storage_uri` 统一使用“带 scheme 的定位符”，例如：
   - 本地：`file:///abs/path/to/file`
-  - S3：`s3://bucket/key`
-  - MinIO：`s3://bucket/key`（端点通过配置区分）
+  - S3：`s3://neo-pivot/<userId>/<documentId>/<filename>`（见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`）
+  - MinIO：同上（端点通过配置区分）
 
 默认落地策略（MVP）：
 
-- 默认使用 `s3://`（AWS S3 或 MinIO 等 S3 兼容实现通过 endpoint 配置区分）。
+- 默认使用 `s3://`（AWS S3 或 MinIO 等 S3 兼容实现通过 endpoint 配置区分），对象 key 组织规则见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`。
 
 ## 10. 验收标准（与提案一致）
 
