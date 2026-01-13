@@ -7,6 +7,8 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -116,16 +118,10 @@ public class SecurityConfig {
      */
     @Validated
     @ConfigurationProperties(prefix = "neopivot.security")
+    @Getter
+    @Setter
     public static class SecurityWhitelistProperties {
 
         private List<String> permitAll = new ArrayList<>();
-
-        public List<String> getPermitAll() {
-            return permitAll;
-        }
-
-        public void setPermitAll(List<String> permitAll) {
-            this.permitAll = permitAll;
-        }
     }
 }

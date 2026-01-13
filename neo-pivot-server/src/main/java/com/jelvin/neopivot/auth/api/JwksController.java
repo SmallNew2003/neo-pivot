@@ -3,6 +3,7 @@ package com.jelvin.neopivot.auth.api;
 import com.jelvin.neopivot.auth.application.JwtKeyService;
 import com.nimbusds.jose.jwk.JWKSet;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,18 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Jelvin
  */
 @RestController
+@RequiredArgsConstructor
 public class JwksController {
 
     private final JwtKeyService jwtKeyService;
-
-    /**
-     * 构造函数。
-     *
-     * @param jwtKeyService 密钥服务
-     */
-    public JwksController(JwtKeyService jwtKeyService) {
-        this.jwtKeyService = jwtKeyService;
-    }
 
     /**
      * 发布 JWKS。

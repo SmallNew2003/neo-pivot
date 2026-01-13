@@ -8,6 +8,7 @@ import com.jelvin.neopivot.auth.api.dto.LoginRequest;
 import com.jelvin.neopivot.auth.api.dto.LoginResponse;
 import jakarta.validation.Valid;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,27 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthProperties authProperties;
     private final UserAuthenticationService userAuthenticationService;
     private final JwtTokenService jwtTokenService;
-
-    /**
-     * 构造函数。
-     *
-     * @param authProperties 配置
-     * @param userAuthenticationService 用户认证服务
-     * @param jwtTokenService JWT 签发服务
-     */
-    public AuthController(
-            AuthProperties authProperties,
-            UserAuthenticationService userAuthenticationService,
-            JwtTokenService jwtTokenService) {
-        this.authProperties = authProperties;
-        this.userAuthenticationService = userAuthenticationService;
-        this.jwtTokenService = jwtTokenService;
-    }
 
     /**
      * 标准登录：用户名/密码换取 JWT。

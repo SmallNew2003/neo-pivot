@@ -2,10 +2,10 @@ package com.jelvin.neopivot.auth.application;
 
 import com.jelvin.neopivot.auth.config.AuthProperties;
 import com.jelvin.neopivot.auth.domain.UserRecord;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,24 +22,12 @@ import org.springframework.stereotype.Service;
  * @author Jelvin
  */
 @Service
+@RequiredArgsConstructor
 public class JwtTokenService {
 
     private final AuthProperties authProperties;
     private final JwtEncoder jwtEncoder;
     private final JwtKeyService jwtKeyService;
-
-    /**
-     * 构造函数。
-     *
-     * @param authProperties 认证配置
-     * @param jwtEncoder JWT 编码器
-     * @param jwtKeyService 密钥服务
-     */
-    public JwtTokenService(AuthProperties authProperties, JwtEncoder jwtEncoder, JwtKeyService jwtKeyService) {
-        this.authProperties = authProperties;
-        this.jwtEncoder = jwtEncoder;
-        this.jwtKeyService = jwtKeyService;
-    }
 
     /**
      * 签发用户级 JWT。

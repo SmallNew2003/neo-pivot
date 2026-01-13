@@ -8,6 +8,7 @@ import com.jelvin.neopivot.auth.persistence.mapper.UserRoleMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,24 +20,12 @@ import org.springframework.stereotype.Service;
  * @author Jelvin
  */
 @Service
+@RequiredArgsConstructor
 public class UserAuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
-
-    /**
-     * 构造函数。
-     *
-     * @param passwordEncoder 密码编码器（bcrypt）
-     * @param userMapper 用户 Mapper
-     * @param userRoleMapper 用户角色 Mapper
-     */
-    public UserAuthenticationService(PasswordEncoder passwordEncoder, UserMapper userMapper, UserRoleMapper userRoleMapper) {
-        this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
-        this.userRoleMapper = userRoleMapper;
-    }
 
     /**
      * 校验用户名与密码是否正确。

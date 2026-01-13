@@ -3,6 +3,8 @@ package com.jelvin.neopivot.auth.config;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,6 +22,8 @@ import org.springframework.validation.annotation.Validated;
  */
 @Validated
 @ConfigurationProperties(prefix = "neopivot.auth")
+@Getter
+@Setter
 public class AuthProperties {
 
     @NotBlank
@@ -30,28 +34,4 @@ public class AuthProperties {
 
     @NotNull
     private Duration tokenTtl = Duration.ofHours(1);
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(String issuer) {
-        this.issuer = issuer;
-    }
-
-    public String getAudience() {
-        return audience;
-    }
-
-    public void setAudience(String audience) {
-        this.audience = audience;
-    }
-
-    public Duration getTokenTtl() {
-        return tokenTtl;
-    }
-
-    public void setTokenTtl(Duration tokenTtl) {
-        this.tokenTtl = tokenTtl;
-    }
 }
