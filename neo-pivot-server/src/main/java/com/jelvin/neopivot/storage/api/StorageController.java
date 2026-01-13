@@ -1,13 +1,16 @@
 package com.jelvin.neopivot.storage.api;
 
-import com.jelvin.neopivot.common.api.ApiNotImplementedException;
+import com.jelvin.neopivot.storage.application.StoragePresignService;
 import com.jelvin.neopivot.storage.api.dto.PresignRequest;
 import com.jelvin.neopivot.storage.api.dto.PresignResponse;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 /**
  * 对象存储相关接口。
@@ -20,6 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/storage")
 public class StorageController {
 
+    private final StoragePresignService storagePresignService;
+
+    /**
+     * 构造函数。
+     *
+     * @param storagePresignService presign 服务
+     */
+    public StorageController(StoragePresignService storagePresignService) {
+        this.storagePresignService = storagePresignService;
+    }
+
     /**
      * 获取 presigned 上传凭证。
      *
@@ -27,7 +41,13 @@ public class StorageController {
      * @return 预签名响应
      */
     @PostMapping("/presign")
-    public PresignResponse presign(@Valid @RequestBody PresignRequest request) {
-        throw new ApiNotImplementedException("presign 尚未实现：后续将生成 s3://bucket/key 与 PUT presigned URL。");
+    public PresignResponse presign(
+            @Valid @RequestBody PresignRequest request,
+            @AuthenticationPrincipal Jwt jwt,
+            HttpServletRequest httpServletRequest) {
+        long ownerId = Long.parseLong(jwt.getSubject());
+        String issuedIp = httpServletRequest.getRemoteAddr();
+        String issuedUserAgent = httpServletRequest.getHeader("User-Agent");
+        return storagePresignService.presignUpload(ownerId, request, issuedIp, issuedUserAgent);
     }
 }
