@@ -65,6 +65,12 @@ After deployment, create separate PR to:
 - Use `openspec archive <change-id> --skip-specs --yes` for tooling-only changes (always pass the change ID explicitly)
 - Run `openspec validate --strict` to confirm the archived change passes checks
 
+#### 归档版本（v<version>）管理约定
+
+- `v<version>` 表示“里程碑/发布窗口”，不是提案流水号；同一窗口内允许多个变更共享同一个 `v<version>`（例如都为 `v0.1.0`）。
+- `v<version>` 由变更负责人/维护者统一控制：只有在切换到下一里程碑/下一发布窗口时才递增（例如从 `v0.1.0` 升级到 `v0.2.0` 或 `v0.1.1`）。
+- 建议在 `changes/archive/INDEX.md` 顶部维护“当前归档版本（Current Archive Version）”，每次切换窗口时先更新该值，再归档后续变更。
+
 ## Before Any Task
 
 **Context Checklist:**
