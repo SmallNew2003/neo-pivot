@@ -1,6 +1,8 @@
 package com.jelvin.neopivot.auth.config;
 
 import com.jelvin.neopivot.auth.application.JwtKeyService;
+import com.jelvin.neopivot.common.security.ApiAccessDeniedHandler;
+import com.jelvin.neopivot.common.security.ApiAuthenticationEntryPoint;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;
 import java.util.ArrayList;
@@ -47,7 +49,11 @@ public class SecurityConfig {
      * @throws Exception 配置异常
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityWhitelistProperties whitelistProperties)
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            SecurityWhitelistProperties whitelistProperties,
+            ApiAuthenticationEntryPoint authenticationEntryPoint,
+            ApiAccessDeniedHandler accessDeniedHandler)
             throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -60,6 +66,7 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
 
+        http.exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
     }
