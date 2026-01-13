@@ -41,6 +41,7 @@ MVP 主路径：标准登录（见 `openspec/decisions/0010-frontend-login-and-s
 - 上传区（直传 S3）
 - 文档列表（分页/搜索可后置）
 - 文档详情（点击进入）
+  - 下载（通过底座签发短期 presigned GET，见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`）
 
 ### 2.3 Chat 测试页
 
@@ -62,7 +63,7 @@ MVP 主路径：标准登录（见 `openspec/decisions/0010-frontend-login-and-s
 
 - `Authorization: Bearer <user_jwt>`
 
-JWT 的 `sub` 将作为 `owner_id` 用于数据隔离。
+JWT 的 `sub` 表示内部用户 ID，用于映射为 `owner_id` 执行数据隔离（见 `openspec/decisions/0017-primary-key-strategy.md`）。
 
 ### 3.2 S3 直传（presigned）流程
 
@@ -72,24 +73,28 @@ JWT 的 `sub` 将作为 `owner_id` 用于数据隔离。
 
 请求（JSON）建议字段：
 
-- `filename`：原始文件名
+- `filename`：原始文件名（底座会生成安全化后的 key 文件名）
 - `contentType`：MIME
 - `sizeBytes`：大小
 - `sha256`：可选（前端可后置计算）
 
 响应（JSON）建议字段：
 
-- `storageUri`：`s3://bucket/key`（底座生成）
+- `documentId`：底座预分配的文档 ID（用于构造对象 key 与后续落库关联）
+- `storageUri`：`s3://neo-pivot/<userId>/<documentId>/<filename>`（底座生成，见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`）
 - `uploadMethod`：固定为 `PUT`（见 `openspec/decisions/0010-frontend-login-and-s3-presign-put.md`）
 - `uploadUrl`：上传 URL
 - `headers`：上传需要的请求头（例如 `Content-Type`）
 - `expiresAt`：过期时间
+- `presignId`：本次签发的凭证 ID（用于后续“上传确认/禁止复用”）
 - `constraints`：可选（maxSize、allowedContentTypes 等）
 
 语义约束：
 
-- `bucket/key` 必须由底座生成并与当前用户绑定。
-- presigned 必须短期有效（分钟级）。
+- `bucket/key` 必须由底座生成并与当前用户绑定，Key 组织规则见：`openspec/decisions/0016-storage-object-key-and-presign-security.md`。
+- presigned 必须短期有效：上传默认 10 分钟（强约束）。
+- 禁止复用：同一个 `presignId` 只能被“上传确认”消费一次（见下文 3.2.3）。
+- 可选：IP 绑定（作为风险降低，不作为强安全保证），见：`openspec/decisions/0016-storage-object-key-and-presign-security.md`。
 
 #### 3.2.2 直传到 S3
 
@@ -105,7 +110,9 @@ JWT 的 `sub` 将作为 `owner_id` 用于数据隔离。
 
 请求（JSON）建议字段：
 
+- `presignId`：必填（对应 3.2.1 返回值，用于消费与审计）
 - `storageUri`：来自 presign 响应的 `storageUri`
+- `documentId`：必填（对应 3.2.1 返回值；用于对齐 key 与落库语义）
 - `filename`
 - `contentType`
 - `sizeBytes`
@@ -119,7 +126,32 @@ JWT 的 `sub` 将作为 `owner_id` 用于数据隔离。
 语义约束：
 
 - 底座必须校验 `storageUri` 的 bucket/key 是否属于当前用户允许的命名空间，防止写入他人对象。
+- 底座必须校验 `presignId` 属于当前用户且未被消费；重复消费必须拒绝（实现阶段确定返回码）。
+- 底座必须校验 `documentId` 与 `storageUri` 一致（避免“借用他人 documentId 或 key”）。
 - 成功创建文档后发布 `DocumentUploadedEvent(documentId)`，进入异步索引。
+
+### 3.2.4 文档下载（presigned GET）
+
+为满足“下载场景”的最小演示与运维需求，底座需要提供短期下载链接签发。
+
+- `POST /api/storage/presign-download`
+
+请求（JSON）建议字段：
+
+- `documentId`：必填
+
+响应（JSON）建议字段：
+
+- `storageUri`：`s3://...`（用于审计/展示）
+- `downloadMethod`：固定为 `GET`
+- `downloadUrl`：短期有效的下载 URL
+- `expiresAt`：过期时间（默认 5 分钟，强约束）
+- `presignId`：本次签发的凭证 ID（用于审计）
+
+语义约束：
+
+- 只能对 owner（或 admin）签发
+- 审计日志必须记录签发（不得记录完整 URL），见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`
 
 ### 3.3 文档列表与状态
 
@@ -145,10 +177,25 @@ JWT 的 `sub` 将作为 `owner_id` 用于数据隔离。
   - S3 CORS/鉴权错误：提示“对象存储拒绝上传，请检查配置或稍后重试”。
 - 索引失败：文档列表需显示失败状态与 `errorMessage` 摘要，并提供“复制错误信息”按钮（MVP 可选）。
 
+### 4.1 Presign 错误码建议（MVP）
+
+为便于前端与审计联动，建议使用清晰的 HTTP 状态码区分失败原因：
+
+- `POST /api/storage/presign`、`POST /api/storage/presign-download`
+  - `401`：未登录/Token 过期
+  - `403`：无权限（例如非 owner 且非 admin 请求下载）
+- `POST /api/documents`（上传确认/落库）
+  - `409`：`presignId` 已被消费（禁止复用）
+  - `410`：`presignId` 或 presigned 已过期
+  - `403`：IP 绑定校验失败（仅当开启该安全开关）
+
 ## 5. 安全要求
 
 - 浏览器端不允许持久化长期 token（若必须使用 localStorage，应提供显式开关并在文档中说明风险）。
-- presigned URL 仅用于上传，不应暴露对象读取权限（读取路径通过底座控制）。
+- presigned URL 应为短期临时权限：
+  - 上传：10 分钟
+  - 下载：5 分钟
+- 对 presign 的签发、消费、过期必须可审计（见 `openspec/decisions/0016-storage-object-key-and-presign-security.md`）。
 - 上传对象 key 的组织规则必须可审计（建议包含 userId 与 documentId 前缀）。
 
 ## 6. 待定项
