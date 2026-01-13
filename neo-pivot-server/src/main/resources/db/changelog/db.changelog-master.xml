@@ -11,6 +11,11 @@
       - custom/: 二开/业务定制迁移脚本（建议配合 Liquibase context=custom 启用）
     -->
 
-    <include file="core/db.changelog-core.sql" relativeToChangelogFile="true"/>
+    <includeAll path="core/00-bootstrap" relativeToChangelogFile="true"/>
+    <includeAll path="core/auth" relativeToChangelogFile="true"/>
+    <includeAll path="core/document" relativeToChangelogFile="true"/>
+    <includeAll path="core/storage" relativeToChangelogFile="true"/>
+    <includeAll path="core/ai-search" relativeToChangelogFile="true"/>
+    <includeAll path="core/local" relativeToChangelogFile="true"/>
     <include file="custom/db.changelog-custom.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
