@@ -2,6 +2,7 @@ package com.jelvin.neopivot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Neo Pivot 后端应用入口。
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Jelvin
  */
 @SpringBootApplication
+@EnableAsync
 public class NeoPivotApplication {
 
     /**
@@ -27,4 +29,3 @@ public class NeoPivotApplication {
         SpringApplication.run(NeoPivotApplication.class, args);
     }
 }
-
