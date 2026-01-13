@@ -103,7 +103,7 @@
 
 - P1（必选）
   - 标准登录 + JWT RS256 + JWKS（已落地骨架）
-  - 最小 roles（USER/ADMIN）与 owner 隔离（`sub -> owner_id`）
+  - 最小 roles（USER/ADMIN）与 owner 隔离（`sub -> userId -> owner_id`，见 `openspec/decisions/0017-primary-key-strategy.md`）
 - P2（增强）
   - Redis 限流（登录防爆破）、失败审计、IP 黑白名单
   - Token Exchange（方案C）作为平台能力受限时的企业化形态
