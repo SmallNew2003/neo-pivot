@@ -2,13 +2,23 @@ package com.jelvin.neopivot.document.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 创建文档请求体（S3 直传后回调落库）。
  *
  * @author Jelvin
  */
+@Getter
+@Setter
 public class CreateDocumentRequest {
+
+    @NotBlank
+    private String presignId;
+
+    @NotBlank
+    private String documentId;
 
     @NotBlank
     private String storageUri;
@@ -23,44 +33,4 @@ public class CreateDocumentRequest {
     private Long sizeBytes;
 
     private String sha256;
-
-    public String getStorageUri() {
-        return storageUri;
-    }
-
-    public void setStorageUri(String storageUri) {
-        this.storageUri = storageUri;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public Long getSizeBytes() {
-        return sizeBytes;
-    }
-
-    public void setSizeBytes(Long sizeBytes) {
-        this.sizeBytes = sizeBytes;
-    }
-
-    public String getSha256() {
-        return sha256;
-    }
-
-    public void setSha256(String sha256) {
-        this.sha256 = sha256;
-    }
 }

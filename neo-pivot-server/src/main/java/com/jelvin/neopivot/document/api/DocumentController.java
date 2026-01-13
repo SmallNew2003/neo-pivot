@@ -1,10 +1,14 @@
 package com.jelvin.neopivot.document.api;
 
 import com.jelvin.neopivot.common.api.ApiNotImplementedException;
+import com.jelvin.neopivot.document.application.DocumentService;
 import com.jelvin.neopivot.document.api.dto.CreateDocumentRequest;
 import com.jelvin.neopivot.document.api.dto.DocumentDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +31,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/documents")
 public class DocumentController {
 
+    private final DocumentService documentService;
+
+    /**
+     * 构造函数。
+     *
+     * @param documentService 文档服务
+     */
+    public DocumentController(DocumentService documentService) {
+        this.documentService = documentService;
+    }
+
     /**
      * 创建文档记录（方式二：提交 storageUri 元数据）。
      *
@@ -34,8 +49,13 @@ public class DocumentController {
      * @return 文档信息
      */
     @PostMapping
-    public DocumentDto create(@Valid @RequestBody CreateDocumentRequest request) {
-        throw new ApiNotImplementedException("文档创建尚未实现：将支持 storageUri 落库并发布 DocumentUploadedEvent。");
+    public DocumentDto create(
+            @Valid @RequestBody CreateDocumentRequest request,
+            @AuthenticationPrincipal Jwt jwt,
+            HttpServletRequest httpServletRequest) {
+        long ownerId = Long.parseLong(jwt.getSubject());
+        String consumedIp = httpServletRequest.getRemoteAddr();
+        return documentService.confirmUpload(ownerId, request, consumedIp);
     }
 
     /**
