@@ -38,6 +38,8 @@
 - 已实现能力（最小可联调）
   - 标准登录：`POST /api/auth/login`（签发 RS256 JWT）
   - JWKS 发布：`GET /.well-known/jwks.json`
+- 当前实现说明
+  - 登录用户来自数据库表 `users/user_roles`（Liquibase 初始化；本地默认种子账号见 `README.md`）
 - 骨架占位（当前会返回 501/Not Implemented）
   - `POST /api/storage/presign`、`POST/GET /api/documents`、`POST /api/chat`
 
