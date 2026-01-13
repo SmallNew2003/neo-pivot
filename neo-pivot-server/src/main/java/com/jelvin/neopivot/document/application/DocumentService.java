@@ -9,6 +9,8 @@ import com.jelvin.neopivot.storage.persistence.entity.StoragePresignEntity;
 import com.jelvin.neopivot.storage.persistence.mapper.StoragePresignMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import java.time.Instant;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,27 +30,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Jelvin
  */
 @Service
+@RequiredArgsConstructor
 public class DocumentService {
 
     private final DocumentMapper documentMapper;
     private final StoragePresignMapper storagePresignMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
-
-    /**
-     * 构造函数。
-     *
-     * @param documentMapper 文档 Mapper
-     * @param storagePresignMapper 预签名记录 Mapper
-     * @param applicationEventPublisher 事件发布器
-     */
-    public DocumentService(
-            DocumentMapper documentMapper,
-            StoragePresignMapper storagePresignMapper,
-            ApplicationEventPublisher applicationEventPublisher) {
-        this.documentMapper = documentMapper;
-        this.storagePresignMapper = storagePresignMapper;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
 
     /**
      * 上传完成确认：创建文档记录并消费 presign。
@@ -113,13 +100,42 @@ public class DocumentService {
         applicationEventPublisher.publishEvent(new DocumentUploadedEvent(documentId));
 
         DocumentDto dto = new DocumentDto();
-        dto.setId(String.valueOf(documentId));
-        dto.setFilename(entity.getFilename());
-        dto.setStorageUri(entity.getStorageUri());
-        dto.setStatus(entity.getStatus());
-        dto.setErrorMessage(entity.getErrorMessage());
-        dto.setCreatedAt(entity.getCreatedAt());
+        fillDocumentDto(dto, entity);
         return dto;
+    }
+
+    /**
+     * 查询当前用户文档列表（按创建时间倒序）。
+     *
+     * @param ownerId 当前用户 ID（JWT sub）
+     * @return 文档列表
+     */
+    public List<DocumentDto> listDocuments(long ownerId) {
+        QueryWrapper query =
+                QueryWrapper.create()
+                        .where("owner_id = ?", ownerId)
+                        .orderBy("created_at desc");
+        List<DocumentEntity> entities = documentMapper.selectListByQuery(query);
+        return entities.stream().map(DocumentService::toDto).toList();
+    }
+
+    /**
+     * 查询当前用户文档详情。
+     *
+     * @param ownerId 当前用户 ID（JWT sub）
+     * @param documentId 文档 ID
+     * @return 文档详情
+     */
+    public DocumentDto getDocument(long ownerId, long documentId) {
+        QueryWrapper query =
+                QueryWrapper.create()
+                        .where("id = ?", documentId)
+                        .and("owner_id = ?", ownerId);
+        DocumentEntity entity = documentMapper.selectOneByQuery(query);
+        if (entity == null) {
+            throw new DocumentNotFoundException();
+        }
+        return toDto(entity);
     }
 
     private StoragePresignEntity findPresignForOwner(long presignId, long ownerId) {
@@ -133,6 +149,21 @@ public class DocumentService {
         } catch (Exception e) {
             throw new IllegalArgumentException(fieldName + " 必须为数字字符串");
         }
+    }
+
+    private static DocumentDto toDto(DocumentEntity entity) {
+        DocumentDto dto = new DocumentDto();
+        fillDocumentDto(dto, entity);
+        return dto;
+    }
+
+    private static void fillDocumentDto(DocumentDto dto, DocumentEntity entity) {
+        dto.setId(entity.getId() == null ? null : String.valueOf(entity.getId()));
+        dto.setFilename(entity.getFilename());
+        dto.setStorageUri(entity.getStorageUri());
+        dto.setStatus(entity.getStatus());
+        dto.setErrorMessage(entity.getErrorMessage());
+        dto.setCreatedAt(entity.getCreatedAt());
     }
 
     /**
@@ -174,4 +205,12 @@ public class DocumentService {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     private static class PresignMismatchException extends RuntimeException {}
+
+    /**
+     * 文档不存在或不属于当前用户：返回 404。
+     *
+     * @author Jelvin
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private static class DocumentNotFoundException extends RuntimeException {}
 }

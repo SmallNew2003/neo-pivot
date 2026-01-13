@@ -1,12 +1,12 @@
 package com.jelvin.neopivot.document.api;
 
-import com.jelvin.neopivot.common.api.ApiNotImplementedException;
 import com.jelvin.neopivot.document.application.DocumentService;
 import com.jelvin.neopivot.document.api.dto.CreateDocumentRequest;
 import com.jelvin.neopivot.document.api.dto.DocumentDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,18 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/documents")
+@RequiredArgsConstructor
 public class DocumentController {
 
     private final DocumentService documentService;
-
-    /**
-     * 构造函数。
-     *
-     * @param documentService 文档服务
-     */
-    public DocumentController(DocumentService documentService) {
-        this.documentService = documentService;
-    }
 
     /**
      * 创建文档记录（方式二：提交 storageUri 元数据）。
@@ -64,8 +56,9 @@ public class DocumentController {
      * @return 文档列表
      */
     @GetMapping
-    public List<DocumentDto> list() {
-        throw new ApiNotImplementedException("文档列表尚未实现。");
+    public List<DocumentDto> list(@AuthenticationPrincipal Jwt jwt) {
+        long ownerId = Long.parseLong(jwt.getSubject());
+        return documentService.listDocuments(ownerId);
     }
 
     /**
@@ -75,7 +68,17 @@ public class DocumentController {
      * @return 文档详情
      */
     @GetMapping("/{documentId}")
-    public DocumentDto get(@PathVariable String documentId) {
-        throw new ApiNotImplementedException("文档详情尚未实现。");
+    public DocumentDto get(@PathVariable String documentId, @AuthenticationPrincipal Jwt jwt) {
+        long ownerId = Long.parseLong(jwt.getSubject());
+        long parsedDocumentId = parseLongOrThrow(documentId, "documentId");
+        return documentService.getDocument(ownerId, parsedDocumentId);
+    }
+
+    private static long parseLongOrThrow(String value, String fieldName) {
+        try {
+            return Long.parseLong(value);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(fieldName + " 必须为数字字符串");
+        }
     }
 }
