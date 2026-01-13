@@ -8,6 +8,7 @@ import com.jelvin.neopivot.storage.persistence.mapper.StoragePresignMapper;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
  * @author Jelvin
  */
 @Service
+@RequiredArgsConstructor
 public class StoragePresignService {
 
     private static final Logger log = LoggerFactory.getLogger(StoragePresignService.class);
@@ -34,28 +36,6 @@ public class StoragePresignService {
     private final DocumentIdAllocatorService documentIdAllocatorService;
     private final S3Presigner s3Presigner;
     private final StoragePresignMapper storagePresignMapper;
-
-    /**
-     * 构造函数。
-     *
-     * @param storageS3Properties S3 配置
-     * @param storageObjectKeyService 对象 key 服务
-     * @param documentIdAllocatorService 文档 ID 预分配服务
-     * @param s3Presigner S3 presigner
-     * @param storagePresignMapper 预签名记录 Mapper
-     */
-    public StoragePresignService(
-            StorageS3Properties storageS3Properties,
-            StorageObjectKeyService storageObjectKeyService,
-            DocumentIdAllocatorService documentIdAllocatorService,
-            S3Presigner s3Presigner,
-            StoragePresignMapper storagePresignMapper) {
-        this.storageS3Properties = storageS3Properties;
-        this.storageObjectKeyService = storageObjectKeyService;
-        this.documentIdAllocatorService = documentIdAllocatorService;
-        this.s3Presigner = s3Presigner;
-        this.storagePresignMapper = storagePresignMapper;
-    }
 
     /**
      * 签发上传 presigned PUT。

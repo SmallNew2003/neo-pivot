@@ -5,12 +5,13 @@ import com.jelvin.neopivot.storage.api.dto.PresignRequest;
 import com.jelvin.neopivot.storage.api.dto.PresignResponse;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 
 /**
  * 对象存储相关接口。
@@ -21,18 +22,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
  */
 @RestController
 @RequestMapping("/api/storage")
+@RequiredArgsConstructor
 public class StorageController {
 
     private final StoragePresignService storagePresignService;
-
-    /**
-     * 构造函数。
-     *
-     * @param storagePresignService presign 服务
-     */
-    public StorageController(StoragePresignService storagePresignService) {
-        this.storagePresignService = storagePresignService;
-    }
 
     /**
      * 获取 presigned 上传凭证。

@@ -1,6 +1,7 @@
 package com.jelvin.neopivot.storage.application;
 
 import com.jelvin.neopivot.document.persistence.mapper.DocumentMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,18 +13,10 @@ import org.springframework.stereotype.Service;
  * @author Jelvin
  */
 @Service
+@RequiredArgsConstructor
 public class DocumentIdAllocatorService {
 
     private final DocumentMapper documentMapper;
-
-    /**
-     * 构造函数。
-     *
-     * @param documentMapper 文档 Mapper
-     */
-    public DocumentIdAllocatorService(DocumentMapper documentMapper) {
-        this.documentMapper = documentMapper;
-    }
 
     /**
      * 分配下一个文档 ID。
