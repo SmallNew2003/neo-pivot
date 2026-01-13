@@ -5,12 +5,13 @@
 ## 文档入口
 
 - 变更提案与规格：`openspec/AGENTS.md`
-- MVP 提案：`openspec/proposals/0001-mvp-rag-knowledge-nexus.md`
-- 多平台适配提案：`openspec/proposals/0002-platform-integration-strategy.md`
-- 平台鉴权与身份映射提案：`openspec/proposals/0003-platform-auth-and-identity-mapping.md`
-- 前端管理台提案：`openspec/proposals/0004-frontend-admin-console.md`
-- 模块与目录结构提案：`openspec/proposals/0005-repo-structure-and-modules.md`
-- 后端包结构提案：`openspec/proposals/0006-server-module-and-package-structure.md`
+- MVP 提案：`openspec/changes/archive/2026-01-12-v0.1.0-add-mvp-rag-knowledge-nexus/proposal.md`
+- 多平台适配提案：`openspec/changes/archive/2026-01-12-v0.1.0-add-platform-integration-strategy/proposal.md`
+- 平台鉴权与身份映射提案：`openspec/changes/archive/2026-01-12-v0.1.0-add-platform-auth-and-identity-mapping/proposal.md`
+- 前端管理台提案：`openspec/changes/archive/2026-01-12-v0.1.0-add-frontend-admin-console/proposal.md`
+- 模块与目录结构提案：`openspec/changes/archive/2026-01-12-v0.1.0-refactor-repo-structure-and-modules/proposal.md`
+- 后端包结构提案：`openspec/changes/archive/2026-01-12-v0.1.0-refactor-server-module-and-package-structure/proposal.md`
+- 统一 API 响应体提案：`openspec/changes/archive/2026-01-13-v0.1.0-add-unified-api-response-envelope/proposal.md`
 - MVP 规格：`openspec/specs/0001-mvp-rag-knowledge-nexus-spec.md`
 - 前端管理台规格：`openspec/specs/0002-frontend-admin-console-spec.md`
 - 标准登录规格：`openspec/specs/0003-auth-login-spec.md`
