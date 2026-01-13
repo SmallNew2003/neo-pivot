@@ -94,5 +94,5 @@ MVP 倾向采用“单数据库 + 向量扩展”的方式降低复杂度：
 - 异步执行：使用 Spring 事件 + 虚拟线程，还是引入消息队列？MVP 不引入 MQ，后续再评估。
 - LLM/Embedding Provider：设计上支持 OpenAI/Azure OpenAI/Ollama 可插拔（已确认）；默认落地已决定采用 OpenAI Compatible API（见 `openspec/decisions/0009-llm-default-openai.md`），模型名称与参数在实现前补齐。
 - 文件存储：设计上支持本地文件系统与 S3/MinIO 可插拔（已确认），且默认落地选择 S3（已确认）；但本地/CI 使用 AWS 还是 MinIO 的初始化方式在实现前补齐。
-- 多平台适配：是否需要在实现阶段同步落地 Dify/n8n 的最小接入？总体策略见 `openspec/proposals/0002-platform-integration-strategy.md`。
+- 多平台适配：是否需要在实现阶段同步落地 Dify/n8n 的最小接入？总体策略见 `openspec/changes/archive/2026-01-12-v0.1.0-add-platform-integration-strategy/proposal.md`。
   - 说明：多平台的“设计与扩展位”可以进入 MVP；Dify/n8n 的“实际接入实现”默认后置到增强阶段。
