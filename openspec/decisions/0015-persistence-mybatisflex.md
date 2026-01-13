@@ -20,7 +20,7 @@ MVP 阶段持久层需要：
 ## 约束与约定
 
 - 数据访问以 Mapper/QueryWrapper 为主，复杂查询允许直接写 SQL（需可读、可测试）。
-- 与权限隔离相关的过滤（例如 `owner_id == sub`）在查询层必须显式体现，避免遗漏。
+- 与权限隔离相关的过滤（例如 `owner_id == userId(sub)`）在查询层必须显式体现，避免遗漏。
 - 建议落地结构（后端代码目录约定）：
   - 每个业务模块（例如 `auth/document/search`）内部新增 `persistence/` 子包
   - `persistence/entity/`：表对应的 POJO（不使用 JPA 注解）
@@ -30,7 +30,8 @@ MVP 阶段持久层需要：
   - 简单 CRUD 使用 MyBatis-Flex Wrapper/Query API
   - 复杂查询（尤其是 PGVector 检索）允许写明确 SQL，但必须有 owner 过滤与必要索引假设
 - 扫描与注册：
-  - Mapper 必须可被 Spring 扫描（后续实现时统一用 `@MapperScan` 或 starter 默认扫描策略，二选一并在实现代码中固化）
+  - 按模块拆分扫描：每个模块提供自己的配置类/初始化入口，并在模块内使用 `@MapperScan("<module>.persistence.mapper")` 显式扫描
+  - 避免全局扫描整个根包导致模块边界失真与误依赖
 
 ## 影响
 
