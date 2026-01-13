@@ -14,7 +14,7 @@
 
 ## 决策
 
-采用“核心底座 + 适配层 + 多平台可选”的总体策略（对应提案 `openspec/proposals/0002-platform-integration-strategy.md`）：
+采用“核心底座 + 适配层 + 多平台可选”的总体策略（对应提案 `openspec/changes/archive/2026-01-12-v0.1.0-add-platform-integration-strategy/proposal.md`）：
 
 - 核心底座负责数据与规则的权威性（认证/鉴权、文档、对象存储、向量检索与权限过滤、索引状态机）。
 - 各平台通过适配层接入，平台差异不渗透到核心业务模型。

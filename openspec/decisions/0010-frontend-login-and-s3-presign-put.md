@@ -13,7 +13,7 @@
 
 ## 决策
 
-- 管理台采用**标准登录**：通过底座登录接口获取用户 JWT，并按方案A透传（见 `openspec/proposals/0003-platform-auth-and-identity-mapping.md`）。
+- 管理台采用**标准登录**：通过底座登录接口获取用户 JWT，并按方案A透传（见 `openspec/changes/archive/2026-01-12-v0.1.0-add-platform-auth-and-identity-mapping/proposal.md`）。
 - S3 直传主路径采用 **presigned PUT**：
   - 底座签发短期有效的 presigned URL
   - 浏览器使用 HTTP PUT 直传对象到 S3
@@ -48,4 +48,3 @@
 
 - 在 `openspec/specs/0002-frontend-admin-console-spec.md` 固化登录接口与 presigned PUT 契约。
 - 如需要更强约束（文件类型/大小/表单字段），后续可新增 presigned POST 作为可选能力，但不改变主路径语义。
-
