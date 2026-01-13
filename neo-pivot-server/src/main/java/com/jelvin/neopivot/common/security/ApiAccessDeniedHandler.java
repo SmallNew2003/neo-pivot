@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,18 +21,10 @@ import org.springframework.stereotype.Component;
  * @author Jelvin
  */
 @Component
+@RequiredArgsConstructor
 public class ApiAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
-
-    /**
-     * 构造函数。
-     *
-     * @param objectMapper JSON 序列化器
-     */
-    public ApiAccessDeniedHandler(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
@@ -45,4 +38,3 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
         objectMapper.writeValue(response.getWriter(), body);
     }
 }
-

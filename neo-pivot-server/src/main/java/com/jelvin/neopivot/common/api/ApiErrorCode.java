@@ -1,5 +1,7 @@
 package com.jelvin.neopivot.common.api;
 
+import lombok.Getter;
+
 /**
  * API 错误码。
  *
@@ -7,6 +9,7 @@ package com.jelvin.neopivot.common.api;
  *
  * @author Jelvin
  */
+@Getter
 public enum ApiErrorCode {
     OK("0"),
     BAD_REQUEST("BAD_REQUEST"),
@@ -24,9 +27,4 @@ public enum ApiErrorCode {
     ApiErrorCode(String code) {
         this.code = code;
     }
-
-    public String getCode() {
-        return code;
-    }
 }
-

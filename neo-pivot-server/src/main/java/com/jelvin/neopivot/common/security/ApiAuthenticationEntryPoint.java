@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -20,18 +21,10 @@ import org.springframework.stereotype.Component;
  * @author Jelvin
  */
 @Component
+@RequiredArgsConstructor
 public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
-
-    /**
-     * 构造函数。
-     *
-     * @param objectMapper JSON 序列化器
-     */
-    public ApiAuthenticationEntryPoint(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     @Override
     public void commence(
@@ -48,4 +41,3 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
         objectMapper.writeValue(response.getWriter(), body);
     }
 }
-

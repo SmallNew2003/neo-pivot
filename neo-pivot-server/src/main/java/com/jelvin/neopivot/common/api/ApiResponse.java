@@ -1,6 +1,8 @@
 package com.jelvin.neopivot.common.api;
 
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 统一 API 响应体（Envelope）。
@@ -14,6 +16,8 @@ import java.util.List;
  * @param <T> 数据类型
  * @author Jelvin
  */
+@Getter
+@Setter
 public class ApiResponse<T> {
 
     private boolean success;
@@ -47,53 +51,4 @@ public class ApiResponse<T> {
         response.setTraceId(traceId);
         return response;
     }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    public String getTraceId() {
-        return traceId;
-    }
-
-    public void setTraceId(String traceId) {
-        this.traceId = traceId;
-    }
-
-    public List<ApiErrorDetail> getDetails() {
-        return details;
-    }
-
-    public void setDetails(List<ApiErrorDetail> details) {
-        this.details = details;
-    }
 }
-
