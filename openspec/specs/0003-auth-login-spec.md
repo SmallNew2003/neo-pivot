@@ -7,7 +7,7 @@
 ### 1.1 目标
 
 - 提供标准登录能力：用户名/密码 → 签发用户级 JWT（RS256）。
-- 资源服务（核心底座 API）统一以 JWT 验签并解析 `sub/roles` 实现权限隔离（`owner_id == sub`）。
+- 资源服务（核心底座 API）统一以 JWT 验签并解析 `sub/roles` 实现权限隔离（`owner_id == userId(sub)`）。
 - 支持 JWKS 公钥发布，便于资源服务验签与密钥轮换。
 
 ### 1.2 非目标（MVP 不做）
@@ -35,7 +35,7 @@
 
 必须包含：
 
-- `sub`：用户唯一标识（建议使用内部 `userId` 字符串）
+- `sub`：内部用户 ID（数值型，以字符串形式承载，等同于 `users.id`，见 `openspec/decisions/0017-primary-key-strategy.md`）
 - `iss`：签发者
 - `aud`：受众（建议为本底座 API 的标识）
 - `exp`：过期时间（必须校验）
@@ -102,10 +102,10 @@
 
 MVP 最小用户表字段建议：
 
-- `id`
+- `id`（MVP 采用 `BIGSERIAL`，见 `openspec/decisions/0017-primary-key-strategy.md`）
 - `username`（唯一）
 - `password_hash`
-- `roles`（可用字符串数组或 join 表）
+- `user_roles`（关联表，见 `openspec/decisions/0018-user-roles-join-table.md`）
 - `created_at/updated_at`
 
 ## 7. 可观测性与审计（建议）
@@ -122,4 +122,3 @@ MVP 最小用户表字段建议：
 
 - `aud/iss` 的具体取值与校验策略（建议在配置中统一约束）。
 - 是否需要为平台工具调用提供“短期 token 获取/刷新机制”（后续可用 token exchange 方案 C 解决）。
-
