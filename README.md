@@ -41,6 +41,13 @@
 - 前端管理台（Vue / Vite）：`neo-pivot-console/`
 - 本地依赖（PostgreSQL+PGVector / MinIO）：`docker-compose.yml`
 
+## 编码规范（后端）
+
+- 依赖注入统一使用“构造函数注入”，并优先用 Lombok `@RequiredArgsConstructor` 生成构造函数（字段使用 `private final`）。
+- DTO/配置类优先用 Lombok `@Getter/@Setter` 去掉样板代码（避免无意引入 `@Data` 的 equals/hashCode/toString 语义）。
+- 当字段需要 `@Qualifier/@Value` 等注解时，通过 `neo-pivot-server/lombok.config` 的 `lombok.copyableAnnotations` 自动复制到构造函数参数，避免为了参数注解而手写构造函数。
+- 本地 IDE 需开启 annotation processing（否则 Lombok 代码生成不会生效，可能出现“找不到构造函数/Getter/Setter”的假报错）。
+
 ## 本地启动（骨架阶段）
 
 1) 启动依赖
