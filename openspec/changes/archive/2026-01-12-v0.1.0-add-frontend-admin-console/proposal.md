@@ -5,7 +5,7 @@
 当前项目已明确：
 
 - 核心底座提供企业级 RAG 能力，主路径为模式A：最终答案生成由底座统一负责（`openspec/decisions/0008-generation-owned-by-core.md`）。
-- 平台接入主路径为方案A：平台/前端透传终端用户 JWT（`openspec/proposals/0003-platform-auth-and-identity-mapping.md`）。
+- 平台接入主路径为方案A：平台/前端透传终端用户 JWT（`openspec/changes/archive/2026-01-12-v0.1.0-add-platform-auth-and-identity-mapping/proposal.md`）。
 - 文件存储默认选择 S3（`openspec/decisions/0005-storage-default-s3.md`）。
 
 在此基础上，需要一个最小但可用的前端，用于：
