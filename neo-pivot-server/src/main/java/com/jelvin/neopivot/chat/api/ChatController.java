@@ -1,9 +1,12 @@
 package com.jelvin.neopivot.chat.api;
 
+import com.jelvin.neopivot.chat.application.ChatService;
 import com.jelvin.neopivot.chat.api.dto.ChatRequest;
 import com.jelvin.neopivot.chat.api.dto.ChatResponse;
-import com.jelvin.neopivot.common.api.ApiNotImplementedException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ChatController {
+
+    private final ChatService chatService;
 
     /**
      * 问答接口。
@@ -27,7 +33,8 @@ public class ChatController {
      * @return 问答响应
      */
     @PostMapping("/chat")
-    public ChatResponse chat(@Valid @RequestBody ChatRequest request) {
-        throw new ApiNotImplementedException("Chat 主链路尚未实现：后续将按 OpenSpec 接入检索与生成并返回 citations。");
+    public ChatResponse chat(@Valid @RequestBody ChatRequest request, @AuthenticationPrincipal Jwt jwt) {
+        long ownerId = Long.parseLong(jwt.getSubject());
+        return chatService.chat(ownerId, request);
     }
 }
