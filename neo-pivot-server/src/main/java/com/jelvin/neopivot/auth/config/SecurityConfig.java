@@ -1,6 +1,6 @@
 package com.jelvin.neopivot.auth.config;
 
-import com.jelvin.neopivot.auth.application.JwtKeyService;
+import com.jelvin.neopivot.auth.infrastructure.jwt.JwtKeyService;
 import com.jelvin.neopivot.common.security.ApiAccessDeniedHandler;
 import com.jelvin.neopivot.common.security.ApiAuthenticationEntryPoint;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;

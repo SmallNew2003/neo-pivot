@@ -34,4 +34,45 @@ public class AuthProperties {
 
     @NotNull
     private Duration tokenTtl = Duration.ofHours(1);
+
+    @NotNull
+    private OtpProperties otp = new OtpProperties();
+
+    @NotNull
+    private WechatProperties wechat = new WechatProperties();
+
+    /**
+     * OTP 配置。
+     *
+     * @author Jelvin
+     */
+    @Getter
+    @Setter
+    public static class OtpProperties {
+
+        @NotNull
+        private Duration ttl = Duration.ofMinutes(5);
+
+        @NotNull
+        private Duration sendInterval = Duration.ofSeconds(60);
+
+        @NotNull
+        private Integer maxVerifyAttempts = 5;
+    }
+
+    /**
+     * 微信登录配置（OAuth2 授权码）。
+     *
+     * @author Jelvin
+     */
+    @Getter
+    @Setter
+    public static class WechatProperties {
+
+        private String appId;
+        private String appSecret;
+
+        @NotBlank
+        private String baseUrl = "https://api.weixin.qq.com";
+    }
 }
