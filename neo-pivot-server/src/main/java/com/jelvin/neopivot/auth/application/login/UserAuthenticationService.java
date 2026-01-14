@@ -1,4 +1,4 @@
-package com.jelvin.neopivot.auth.application;
+package com.jelvin.neopivot.auth.application.login;
 
 import com.jelvin.neopivot.auth.domain.UserRecord;
 import com.jelvin.neopivot.auth.persistence.entity.UserEntity;
