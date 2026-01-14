@@ -1,6 +1,6 @@
 package com.jelvin.neopivot.auth.api;
 
-import com.jelvin.neopivot.auth.application.JwtKeyService;
+import com.jelvin.neopivot.auth.infrastructure.jwt.JwtKeyService;
 import com.nimbusds.jose.jwk.JWKSet;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

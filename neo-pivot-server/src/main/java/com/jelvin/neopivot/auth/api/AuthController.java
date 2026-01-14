@@ -1,19 +1,19 @@
 package com.jelvin.neopivot.auth.api;
 
-import com.jelvin.neopivot.auth.application.JwtTokenService;
-import com.jelvin.neopivot.auth.application.UserAuthenticationService;
-import com.jelvin.neopivot.auth.config.AuthProperties;
-import com.jelvin.neopivot.auth.domain.UserRecord;
+import com.jelvin.neopivot.auth.api.dto.OtpSendRequest;
+import com.jelvin.neopivot.auth.api.dto.OtpSendResponse;
 import com.jelvin.neopivot.auth.api.dto.LoginRequest;
 import com.jelvin.neopivot.auth.api.dto.LoginResponse;
+import com.jelvin.neopivot.auth.application.login.AuthLoginService;
+import com.jelvin.neopivot.auth.infrastructure.otp.OtpService;
+import com.jelvin.neopivot.common.api.ApiResponse;
+import com.jelvin.neopivot.common.trace.ApiTraceId;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -32,44 +32,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthProperties authProperties;
-    private final UserAuthenticationService userAuthenticationService;
-    private final JwtTokenService jwtTokenService;
+    private final AuthLoginService authLoginService;
+    private final OtpService otpService;
 
     /**
-     * 标准登录：用户名/密码换取 JWT。
+     * 统一登录：按 grantType 认证并签发用户级 JWT。
      *
      * @param request 登录请求
+     * @param httpServletRequest HTTP 请求
      * @return 登录响应
      */
     @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        Optional<UserRecord> user = userAuthenticationService.authenticate(request.getUsername(), request.getPassword());
-        if (user.isEmpty()) {
-            throw new InvalidCredentialsException();
-        }
+    public ApiResponse<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpServletRequest) {
+        String traceId = ApiTraceId.resolve(httpServletRequest);
+        httpServletRequest.setAttribute(ApiTraceId.ATTRIBUTE_NAME, traceId);
 
-        var jwt = jwtTokenService.issueToken(user.get());
-
-        LoginResponse response = new LoginResponse();
-        response.setAccessToken(jwt.getTokenValue());
-        response.setTokenType("Bearer");
-        response.setExpiresInSeconds(authProperties.getTokenTtl().toSeconds());
-
-        LoginResponse.UserView userView = new LoginResponse.UserView();
-        userView.setId(String.valueOf(user.get().id()));
-        userView.setUsername(user.get().username());
-        userView.setRoles(user.get().roles());
-        response.setUser(userView);
-
-        return response;
+        String ip = httpServletRequest.getRemoteAddr();
+        String userAgent = httpServletRequest.getHeader("User-Agent");
+        LoginResponse response = authLoginService.login(request, traceId, ip, userAgent);
+        return ApiResponse.ok(response, traceId);
     }
 
     /**
-     * 登录失败异常：统一返回 401。
+     * 发送验证码：创建 OTP challenge 并触发验证码发送（MVP 最小实现为创建 challenge + 返回 challengeId）。
      *
-     * @author Jelvin
+     * @param request OTP 发送请求
+     * @param httpServletRequest HTTP 请求
+     * @return OTP 发送响应
      */
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    private static class InvalidCredentialsException extends RuntimeException {}
+    @PostMapping("/otp/send")
+    public ApiResponse<OtpSendResponse> sendOtp(
+            @Valid @RequestBody OtpSendRequest request,
+            HttpServletRequest httpServletRequest) {
+        String traceId = ApiTraceId.resolve(httpServletRequest);
+        httpServletRequest.setAttribute(ApiTraceId.ATTRIBUTE_NAME, traceId);
+
+        OtpService.OtpIssueResult issued = otpService.issue(request.getTenantCode(), request.getChannel(), request.getTarget());
+
+        OtpSendResponse response = new OtpSendResponse();
+        response.setChallengeId(issued.challengeId());
+        response.setExpiresInSeconds(issued.expiresInSeconds());
+        return ApiResponse.ok(response, traceId);
+    }
 }
